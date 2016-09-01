@@ -16,10 +16,10 @@ class Api::AdviceController < Api::BaseController
     end
 
     @advice = Advice.find(creteria)
-    if @advice.empty?
-      render json: {error: "No advice found"}, status: 404
-    else
+    if @advice.present?
       render json: @advice
+    else
+      render json: {error: "No advice found"}, status: 404
     end
   end
 

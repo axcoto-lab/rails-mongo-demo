@@ -1,6 +1,7 @@
 module RailsAdmin::Config::Fields::Types
   class Map < RailsAdmin::Config::Fields::Base
     RailsAdmin::Config::Fields::Types::register(:map, self)
+    # This is client key which show up in client side
     GMAP_KEY = "AIzaSyC-1UvJ3ws8UfonFkQnB4012i59cdZniHo"
 
     register_instance_option(:address_field) do

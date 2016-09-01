@@ -1,11 +1,11 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  template: MyString
-  advice: MyString
-  skin_type: MyString
+dry:
+  template: Good morning[NAME]! Sky is clear today. [ADVICE]
+  advice: Enjoy a nice day.
+  skin_type: dry
 
-two:
-  template: MyString
-  advice: MyString
-  skin_type: MyString
+normal:
+  template: Good evening [NAME]. [ADVICE].  Tonite will be cold
+  advice: Bring your blanket
+  skin_type: normal
