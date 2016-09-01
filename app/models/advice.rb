@@ -8,7 +8,7 @@ class Advice
 
     advice = events.empty??
               Recommendation.where(:skin_type => criteria[:skin_type]).try(:sample) :
-              events.sample
+              events.first
 
     if advice
       AdviceBuilder::Builder.new(advice, criteria).build
