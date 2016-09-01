@@ -1,0 +1,82 @@
+:javascript
+  function initGeospatialField() {
+    jQuery(function(){
+      var latitude = #{field.value.nil?? field.default_latitude : field.value["coordinates"].try(:last)};
+      var longitude = #{field.value.nil?? field.default_longitude : field.value["coordinates"].try(:first)};
+      var latlng = new google.maps.LatLng(latitude, longitude);
+      var geocoder = new google.maps.Geocoder();
+      var myOptions = {
+        zoom: #{field.default_zoom_level},
+        center: latlng,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        scrollwheel: false
+      };
+      var map = new google.maps.Map(document.getElementById("#{field.dom_name}"), myOptions);
+      // Only one marker can be created
+      var marker = new google.maps.Marker({
+        draggable:true,
+        position: new google.maps.LatLng(latitude, longitude),
+        map: map
+      });
+      google.maps.event.addListener(map, 'click', function(e) {
+        updateLocation(e.latLng);
+      });
+      google.maps.event.addListener(marker,'dragend',function(e) {
+        updateLocation(e.latLng);
+      });
+      jQuery("##{field.address_dom_name},##{field.city_dom_name},##{field.state_dom_name}").on("change keyup", function(){
+        clearTimeout($.data(this, 'timer'));
+        $(this).data('timer', setTimeout(processAddress, 1000));
+      });
+      function processAddress() {
+        // geocode based on this location
+        var address = $("##{field.address_dom_name}").val() || "",
+            city = $("##{field.city_dom_name} option[value='" + $("##{field.city_dom_name}").val() + "']").text()
+                || $("##{field.city_dom_name}").val()
+                || false,
+            state = $("##{field.state_dom_name} option[value='" + $("##{field.state_dom_name}").val() + "']").text()
+                || $("##{field.state_dom_name}").val()
+                || false,
+            country = $("##{field.country_dom_name} option[value='" + $("##{field.country_dom_name}").val() + "']").text()
+                || $("##{field.country_dom_name}").val()
+                || false,
+            address_string = "";
+        address_string = address;
+        if (city) address_string += ", " + city;
+        if (state) address_string += ", " + state;
+        if (country) address_string += ", " + country;
+        if (address_string.length === 0)
+          return;
+        geocoder.geocode({ 'address': address_string }, function(results, status){
+          if (! results || results.length === 0 || status !== "OK") return;
+          var location = results[0].geometry.location;
+          updateLocation(location);
+        });
+      };
+      function updateLocation(location) {
+        marker.setPosition(location);
+        map.setCenter(location);
+        jQuery("##{field.latitude_dom_name}").val(location.lat());
+        jQuery("##{field.longitude_dom_name}").val(location.lng());
+      }
+    });
+  }
+= javascript_include_tag ("http://maps.googleapis.com/maps/api/js?key=#{field.google_api_key}&callback=initGeospatialField")
+
+%style
+  = "##{field.dom_name} label {width: auto;display: inline;}"
+  = "##{field.dom_name} img {max-width: none;}"
+
+%div.ramf-map-container{:id => field.dom_name, :style => "width:#{field.map_width}px; height:#{field.map_height}px"}
+= form.fields_for field.name do |location_field|
+  = location_field.send :hidden_field, "type", field.html_attributes.reverse_merge({ :value => "Point" })
+
+  = location_field.fields_for :coordinates do |coordinates_field|
+    %div.control-group
+      = coordinates_field.label :longitude, :class => "control-label"
+      %div.controls
+        = coordinates_field.send :text_field, nil, field.html_attributes.reverse_merge({ :value => field.value.nil?? field.default_longitude : field.value["coordinates"].try(:first), :id => field.longitude_dom_name })
+    %div.control-group
+      = coordinates_field.label :latitude, :class => "control-label"
+      %div.controls
+        = coordinates_field.send :text_field, nil, field.html_attributes.reverse_merge({ :value => field.value.nil?? field.default_latitude : field.value["coordinates"].try(:last), :id => field.latitude_dom_name })

@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  template: MyString
+  advice: MyString
+  skin_type: MyString
+
+two:
+  template: MyString
+  advice: MyString
+  skin_type: MyString

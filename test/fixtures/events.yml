@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  type: first event
+  description: This is first event
+  loc:
+    type: Point
+    coordinates:  [ -122.4376, 37.7577 ]
+
+two:
+  type: Second event
+  description: This is second event
+  loc:
+    type: Point
+    coordinates:  [ -122.0000297, 37.4096231 ]
